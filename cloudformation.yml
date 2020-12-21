@@ -156,7 +156,7 @@ Resources:
           nextToken: String
         }
         type Query {
-          allNotes(limit: Int, nextToken: String): PaginatedNotes!
+          getNotes(limit: Int, nextToken: String): PaginatedNotes!
           getNote(NoteId: ID!): Note
         }
         type Mutation {
@@ -185,7 +185,7 @@ Resources:
     Properties:
       ApiId: !GetAtt AppSyncApi.ApiId
       TypeName: Query
-      FieldName: allNotes
+      FieldName: getNotes
       DataSourceName: !GetAtt AppSyncNotesTableDataSource.Name
       RequestMappingTemplate: |
         {
