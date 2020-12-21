@@ -96,11 +96,11 @@ Resources:
           Required: false
         - Name: email
           AttributeDataType: String
-          Mutable: false
+          Mutable: true
           Required: true
         - Name: phone_number
           AttributeDataType: String
-          Mutable: false
+          Mutable: true
           Required: true
 
   UserPoolClient:
