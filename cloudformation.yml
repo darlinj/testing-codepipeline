@@ -97,11 +97,11 @@ Resources:
         - Name: email
           AttributeDataType: String
           Mutable: true
-          Required: true
+          Required: false
         - Name: phone_number
           AttributeDataType: String
           Mutable: true
-          Required: true
+          Required: false
 
   UserPoolClient:
     Type: "AWS::Cognito::UserPoolClient"
