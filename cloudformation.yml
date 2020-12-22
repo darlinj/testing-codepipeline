@@ -197,9 +197,7 @@ Resources:
               ":id": $util.dynamodb.toDynamoDBJson($ctx.identity.sub)
             }
           }
-        },
-        "limit": $util.defaultIfNull(${ctx.args.limit}, 20),
-        "nextToken": $util.toJson(${ctx.args.nextToken})
+        }
       ResponseMappingTemplate: |
         {
           "notes": $util.toJson($ctx.result.items),
@@ -215,7 +213,7 @@ Resources:
       DataSourceName: !GetAtt AppSyncNotesTableDataSource.Name
       RequestMappingTemplate: |
         {
-          "version": "2012-02-28",
+          "version": "2017-02-28",
           "operation": "GetItem",
           "key": {
             "NoteId": $util.dynamodb.toDynamoDBJson($ctx.args.NoteId),
@@ -234,7 +232,7 @@ Resources:
       DataSourceName: !GetAtt AppSyncNotesTableDataSource.Name
       RequestMappingTemplate: |
         {
-          "version": "2012-02-28",
+          "version": "2017-02-28",
           "operation": "PutItem",
           "key": {
             "NoteId": $util.dynamodb.toDynamoDBJson($ctx.args.NoteId),
@@ -257,7 +255,7 @@ Resources:
       DataSourceName: !GetAtt AppSyncNotesTableDataSource.Name
       RequestMappingTemplate: |
         {
-          "version": "2012-02-28",
+          "version": "2017-02-28",
           "operation": "DeleteItem",
           "key": {
             "NoteId": $util.dynamodb.toDynamoDBJson($ctx.args.NoteId),
