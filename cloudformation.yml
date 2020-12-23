@@ -151,12 +151,11 @@ Resources:
           title: String
           content: String
         }
-        type PaginatedNotes {
+        type Notes {
           notes: [Note!]!
-          nextToken: String
         }
         type Query {
-          getNotes(limit: Int, nextToken: String): PaginatedNotes!
+          getNotes(limit: Int, nextToken: String): Notes!
           getNote(NoteId: ID!): Note
         }
         type Mutation {
@@ -190,18 +189,11 @@ Resources:
       RequestMappingTemplate: |
         {
           "version": "2017-02-28",
-          "operation": "Query",
-          "query": {
-            "expression": "UserId = :id",
-            "expressionValues": {
-              ":id": $util.dynamodb.toDynamoDBJson($ctx.identity.sub)
-            }
-          }
+          "operation": "Query"
         }
       ResponseMappingTemplate: |
         {
-          "notes": $util.toJson($ctx.result.items),
-          "nextToken": $util.toJson(${ctx.args.nextToken})
+          "notes": $util.toJson($ctx.result.items)
         }
   AppSyncGetNoteQueryResolver:
     Type: "AWS::AppSync::Resolver"
