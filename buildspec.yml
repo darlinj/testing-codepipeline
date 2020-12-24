@@ -12,6 +12,6 @@ phases:
 reports:
   jest_reports:
     files:
-      - report
+      - "report"
     file-format: JUNITXML
-    base-directory: testReports
+    base-directory: "testReports"
