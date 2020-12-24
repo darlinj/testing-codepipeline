@@ -191,4 +191,14 @@ module.exports = {
 
   // Whether to use watchman for file crawling
   // watchman: true,
+  reporters: [
+    "default",
+    [
+      "jest-junit",
+      {
+        outputDirectory: testReports,
+        outputName: report
+      }
+    ]
+  ]
 };
