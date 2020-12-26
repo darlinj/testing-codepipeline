@@ -11,6 +11,7 @@ const aws_config = {
 Amplify.configure(aws_config);
 
 it("fetches things", () => {
+  console.log("API Endpoint: ", process.env.APIEndpoint);
   const query = graphqlOperation(`query MyQuery {
   get(id: "123", meta: "somedata", title: "sdfds") {
     meta
