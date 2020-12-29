@@ -115,7 +115,7 @@ Resources:
     Type: "AWS::DynamoDB::Table"
     Description: "Data store for AWS AppSync Questionnaires Type"
     Properties:
-      TableName: !Sub ${APIName}-notes-table
+      TableName: !Sub ${APIName}-questionnaires-table
       AttributeDefinitions:
         - AttributeName: "QuestionnaireId"
           AttributeType: "S"
@@ -152,7 +152,7 @@ Resources:
           content: String
         }
         type Questionnaires {
-          notes: [Questionnaire!]!
+          questionnaires: [Questionnaire!]!
         }
         type Query {
           getQuestionnaires(limit: Int, nextToken: String): Questionnaires!
@@ -170,7 +170,7 @@ Resources:
     Type: "AWS::AppSync::DataSource"
     Properties:
       ApiId: !GetAtt AppSyncApi.ApiId
-      Name: !Sub ${APIName}_notes_table
+      Name: !Sub ${APIName}_questionnaires
       Description: "The Questionnaires Table AppSync Data Source"
       Type: AMAZON_DYNAMODB
       ServiceRoleArn: !GetAtt DynamoDBRole.Arn
@@ -193,7 +193,7 @@ Resources:
         }
       ResponseMappingTemplate: |
         {
-          "notes": $util.toJson($ctx.result.items)
+          "questionnaires": $util.toJson($ctx.result.items)
         }
   AppSyncGetQuestionnaireQueryResolver:
     Type: "AWS::AppSync::Resolver"
