@@ -110,6 +110,11 @@ Resources:
       ClientName: !Sub ${APIName}-appsync-client
       GenerateSecret: false
       UserPoolId: !Ref UserPool
+      ExplicitAuthFlows:
+        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_USER_SRP_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+        - ALLOW_CUSTOM_AUTH
 
   QuestionnairesTable:
     Type: "AWS::DynamoDB::Table"
