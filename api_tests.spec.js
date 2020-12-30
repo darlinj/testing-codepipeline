@@ -12,24 +12,21 @@ const aws_config = {
   aws_user_pools_web_client_id: process.env.CLIENT_ID
 };
 
-const password = "Passw0rd!";
-
 Amplify.configure(aws_config);
 
 beforeEach(async () => {
-  console.log("Config", aws_config);
-  console.log("User", process.env.TEST_USERNAME);
-  console.log("Password", password);
-  await Auth.signIn(process.env.TEST_USERNAME, password).then(
+  await Auth.signIn(
+    process.env.TEST_USERNAME,
+    process.env.TEST_USER_PASSWORD
+  ).then(
     user => {
-      console.log(user);
+      console.log("Sucessfully signed in", user.username);
     },
-    error => console.log("FAILED!!!!", error)
+    error => console.log("FAILED TO LOGIN:", error)
   );
 });
 
 it("fetches things", async () => {
-  console.log("API Endpoint: ", process.env.APIEndpoint);
   const query = graphqlOperation(`query MyQuery {
     getQuestionnaires {
     questionnaires {
