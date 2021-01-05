@@ -23,62 +23,14 @@ Resources:
       Parameters:
         APIName: 
           Ref: APIName
-  DynamoDBRole:
-    Type: AWS::IAM::Role
+  DynamoDbTable:
+    Type: 'AWS::CloudFormation::Stack'
     Properties:
-      RoleName: !Sub ${APIName}-appsync-dynamodb-role
-      ManagedPolicyArns:
-        - Ref: AppSyncDynamoDBPolicy
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Action:
-              - sts:AssumeRole
-            Principal:
-              Service:
-                - appsync.amazonaws.com
-    DependsOn:
-      - AppSyncDynamoDBPolicy
-
-  AppSyncDynamoDBPolicy:
-    Type: AWS::IAM::ManagedPolicy
-    Properties:
-      Description: Managed policy to allow AWS AppSync to access the tables created by this template.
-      Path: /appsync/
-      PolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Action:
-              - dynamodb:GetItem
-              - dynamodb:PutItem
-              - dynamodb:DeleteItem
-              - dynamodb:UpdateItem
-              - dynamodb:Query
-              - dynamodb:Scan
-              - dynamodb:BatchGetItem
-              - dynamodb:BatchWriteItem
-            Resource: !Join [ "", [ !GetAtt QuestionnairesTable.Arn, "*" ] ]
-
-  QuestionnairesTable:
-    Type: "AWS::DynamoDB::Table"
-    Description: "Data store for AWS AppSync Questionnaires Type"
-    Properties:
-      TableName: !Sub ${APIName}-questionnaires-table
-      AttributeDefinitions:
-        - AttributeName: "QuestionnaireId"
-          AttributeType: "S"
-        - AttributeName: "UserId"
-          AttributeType: "S"
-      KeySchema:
-        - AttributeName: "QuestionnaireId"
-          KeyType: "HASH"
-        - AttributeName: "UserId"
-          KeyType: "RANGE"
-      ProvisionedThroughput:
-        ReadCapacityUnits: 5
-        WriteCapacityUnits: 5
+      TemplateURL:
+        Fn::Sub: "${SourceBucket}/infra/dynamoDB.yml"
+      Parameters:
+        APIName: 
+          Ref: APIName
   AppSyncApi:
     Type: "AWS::AppSync::GraphQLApi"
     Description: "The GraphQL API for the Questionnaires App"
@@ -124,10 +76,17 @@ Resources:
       Name: !Sub ${APIName}_questionnaires
       Description: "The Questionnaires Table AppSync Data Source"
       Type: AMAZON_DYNAMODB
-      ServiceRoleArn: !GetAtt DynamoDBRole.Arn
+      ServiceRoleArn: # !GetAtt DynamoDBRole.Arn
+        Fn::GetAtt:
+          - DynamoDbTable
+          - Outputs.DBRoleARN
       DynamoDBConfig:
-        TableName: !Ref QuestionnairesTable
+        TableName: #!Ref QuestionnairesTable
+          Fn::GetAtt:
+            - DynamoDbTable
+            - Outputs.QuestionnaireTableID
         AwsRegion: !Sub ${AWS::Region}
+
 
   AppSyncAllQuestionnairesQueryResolver:
     Type: "AWS::AppSync::Resolver"
@@ -209,7 +168,7 @@ Resources:
 
 Outputs:
   CognitoUserPoolId:
-    Description: The Pool ID of the Cognito User Pool
+    Description: The pool id of the cognito user pool
     Value: 
       Fn::GetAtt:
         - CognitoPool
@@ -222,7 +181,10 @@ Outputs:
         - Outputs.UserPoolClientId
   QuestionnairesTable:
     Description: The name of the DynamoDB Table
-    Value: !Ref QuestionnairesTable
+    Value: 
+      Fn::GetAtt:
+        - DynamoDbTable
+        - Outputs.QuestionnaireTableID
   GraphQLApiEndpoint:
     Description: The URL to the GraphQL Endpoint
     Value: !GetAtt AppSyncApi.GraphQLUrl
