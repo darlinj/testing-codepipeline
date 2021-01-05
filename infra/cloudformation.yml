@@ -89,7 +89,7 @@ Resources:
         UserPoolId: 
           Fn::GetAtt:
           - CognitoPool
-          - Outputs.UserPool
+          - Outputs.UserPoolId
         AwsRegion: !Sub ${AWS::Region}
         DefaultAction: "ALLOW"
   AppSyncSchema:
@@ -213,13 +213,13 @@ Outputs:
     Value: 
       Fn::GetAtt:
         - CognitoPool
-        - Outputs.UserPool
+        - Outputs.UserPoolId
   CognitoUserPoolClientId:
     Description: The Client ID for AWS AppSync Auth
     Value: 
       Fn::GetAtt:
         - CognitoPool
-        - Outputs.UserPoolClient
+        - Outputs.UserPoolClientId
   QuestionnairesTable:
     Description: The name of the DynamoDB Table
     Value: !Ref QuestionnairesTable

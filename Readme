@@ -1,0 +1,1 @@
+cloudformation % aws cloudformation update-stack --stack-name pipeline-appsync-api-cloudformation --template-body file://infra/cloudformation.yml --parameters ParameterKey=APIName,ParameterValue=PipelineAPI ParameterKey=SourceBucket,ParameterValue="https://pipeline-artifacts-bannana.s3-eu-west-1.amazonaws.com" --capabilities CAPABILITY_NAMED_IAM  CAPABILITY_AUTO_EXPAND
