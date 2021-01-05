@@ -8,38 +8,21 @@ Parameters:
     MinLength: 3
     MaxLength: 20
     AllowedPattern: '^[a-zA-Z][a-zA-Z0-9_]*$'
+  SourceBucket:
+    Type: String
+    Description: Bucket where the source is copied by the previous stage
+    MinLength: 10
+    MaxLength: 255
 
 Resources:
-  SNSRole:
-    Type: AWS::IAM::Role
-    Description: "An IAM Role to allow Cognito to send SNS messages"
+  CognitoPool:
+    Type: AWS::Cloudformation::Stack
     Properties:
-      RoleName: !Sub ${APIName}-cognito-sns-role
-      ManagedPolicyArns:
-        - Ref: CognitoSNSPolicy
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Action:
-              - sts:AssumeRole
-            Principal:
-              Service:
-                - cognito-idp.amazonaws.com
-    DependsOn:
-      - CognitoSNSPolicy
-
-  CognitoSNSPolicy:
-    Type: AWS::IAM::ManagedPolicy
-    Properties:
-      Description: Managed policy to allow Amazon Cognito to access SNS
-      PolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Action: sns:publish
-            Resource: "*"
-
+      TemplateURL:
+        Fn::Sub: "${SourceBucket}/infra/cognito.yml"
+      Parameters:
+        APIName: 
+          Ref: APIName
   DynamoDBRole:
     Type: AWS::IAM::Role
     Properties:
@@ -78,44 +61,6 @@ Resources:
               - dynamodb:BatchWriteItem
             Resource: !Join [ "", [ !GetAtt QuestionnairesTable.Arn, "*" ] ]
 
-  UserPool:
-    Type: "AWS::Cognito::UserPool"
-    Description: "A Cognito user pool for authenticating users"
-    Properties:
-      UserPoolName: !Sub ${APIName}-user-pool
-      AutoVerifiedAttributes:
-        - phone_number
-      MfaConfiguration: "OFF"
-      SmsConfiguration:
-        ExternalId: !Sub ${APIName}-external
-        SnsCallerArn: !GetAtt SNSRole.Arn
-      Schema:
-        - Name: name
-          AttributeDataType: String
-          Mutable: true
-          Required: false
-        - Name: email
-          AttributeDataType: String
-          Mutable: true
-          Required: false
-        - Name: phone_number
-          AttributeDataType: String
-          Mutable: true
-          Required: false
-
-  UserPoolClient:
-    Type: "AWS::Cognito::UserPoolClient"
-    Description: "App Client used by AWS AppSync"
-    Properties:
-      ClientName: !Sub ${APIName}-appsync-client
-      GenerateSecret: false
-      UserPoolId: !Ref UserPool
-      ExplicitAuthFlows:
-        - ALLOW_USER_PASSWORD_AUTH
-        - ALLOW_USER_SRP_AUTH
-        - ALLOW_REFRESH_TOKEN_AUTH
-        - ALLOW_CUSTOM_AUTH
-
   QuestionnairesTable:
     Type: "AWS::DynamoDB::Table"
     Description: "Data store for AWS AppSync Questionnaires Type"
@@ -134,7 +79,6 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
-
   AppSyncApi:
     Type: "AWS::AppSync::GraphQLApi"
     Description: "The GraphQL API for the Questionnaires App"
@@ -142,10 +86,12 @@ Resources:
       AuthenticationType: "AMAZON_COGNITO_USER_POOLS"
       Name: !Sub ${APIName}
       UserPoolConfig:
-        UserPoolId: !Ref UserPool
+        UserPoolId: 
+          Fn::GetAtt:
+          - CognitoPool
+          - Outputs.UserPool
         AwsRegion: !Sub ${AWS::Region}
         DefaultAction: "ALLOW"
-
   AppSyncSchema:
     Type: "AWS::AppSync::GraphQLSchema"
     Properties:
@@ -264,10 +210,16 @@ Resources:
 Outputs:
   CognitoUserPoolId:
     Description: The Pool ID of the Cognito User Pool
-    Value: !Ref UserPool
+    Value: 
+      Fn::GetAtt:
+        - CognitoPool
+        - Outputs.UserPool
   CognitoUserPoolClientId:
     Description: The Client ID for AWS AppSync Auth
-    Value: !Ref UserPoolClient
+    Value: 
+      Fn::GetAtt:
+        - CognitoPool
+        - Outputs.UserPoolClient
   QuestionnairesTable:
     Description: The name of the DynamoDB Table
     Value: !Ref QuestionnairesTable
