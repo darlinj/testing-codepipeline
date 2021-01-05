@@ -1,0 +1,154 @@
+
+---
+Description: Set up Cognito pool
+
+Parameters:
+  NamePrefix:
+    Type: String
+    Description: prefix for naming all components
+    MinLength: 3
+    AllowedPattern: '^[a-zA-Z][a-zA-Z0-9_]*$'
+  UserPoolId:
+    Type: String
+    MinLength: 3
+  ServiceRoleArn:
+    Type: String
+    MinLength: 3
+  TableName:
+    Type: String
+    MinLength: 3
+
+Resources:
+  AppSyncApi:
+    Type: "AWS::AppSync::GraphQLApi"
+    Description: "The GraphQL API for the Questionnaires App"
+    Properties:
+      AuthenticationType: "AMAZON_COGNITO_USER_POOLS"
+      Name: !Sub ${NamePrefix}
+      UserPoolConfig:
+        UserPoolId: !Ref: UserPoolId
+        AwsRegion: !Sub ${AWS::Region}
+        DefaultAction: "ALLOW"
+  AppSyncSchema:
+    Type: "AWS::AppSync::GraphQLSchema"
+    Properties:
+      ApiId: !GetAtt AppSyncApi.ApiId
+      Definition: |
+        type Questionnaire {
+          QuestionnaireId: ID!
+          title: String
+          content: String
+        }
+        type Questionnaires {
+          questionnaires: [Questionnaire!]!
+        }
+        type Query {
+          getQuestionnaires(limit: Int, nextToken: String): Questionnaires!
+          getQuestionnaire(QuestionnaireId: ID!): Questionnaire
+        }
+        type Mutation {
+          saveQuestionnaire(QuestionnaireId: ID!, title: String!, content: String!): Questionnaire
+          deleteQuestionnaire(QuestionnaireId: ID!): Questionnaire
+        }
+        type Schema {
+          query: Query
+          mutation: Mutation
+        }
+  AppSyncQuestionnairesTableDataSource:
+    Type: "AWS::AppSync::DataSource"
+    Properties:
+      ApiId: !GetAtt AppSyncApi.ApiId
+      Name: !Sub ${NamePrefix}_questionnaires
+      Description: "The Questionnaires Table AppSync Data Source"
+      Type: AMAZON_DYNAMODB
+      ServiceRoleArn: !Ref ServiceRoleArn
+      DynamoDBConfig:
+        TableName: !Ref TableName
+        AwsRegion: !Sub ${AWS::Region}
+
+
+  AppSyncAllQuestionnairesQueryResolver:
+    Type: "AWS::AppSync::Resolver"
+    DependsOn: AppSyncSchema
+    Properties:
+      ApiId: !GetAtt AppSyncApi.ApiId
+      TypeName: Query
+      FieldName: getQuestionnaires
+      DataSourceName: !GetAtt AppSyncQuestionnairesTableDataSource.Name
+      RequestMappingTemplate: |
+        {
+          "version": "2017-02-28",
+          "operation": "Scan"
+        }
+      ResponseMappingTemplate: |
+        {
+          "questionnaires": $util.toJson($ctx.result.items)
+        }
+  AppSyncGetQuestionnaireQueryResolver:
+    Type: "AWS::AppSync::Resolver"
+    DependsOn: AppSyncSchema
+    Properties:
+      ApiId: !GetAtt AppSyncApi.ApiId
+      TypeName: Query
+      FieldName: getQuestionnaire
+      DataSourceName: !GetAtt AppSyncQuestionnairesTableDataSource.Name
+      RequestMappingTemplate: |
+        {
+          "version": "2017-02-28",
+          "operation": "GetItem",
+          "key": {
+            "QuestionnaireId": $util.dynamodb.toDynamoDBJson($ctx.args.QuestionnaireId),
+            "UserId": $util.dynamodb.toDynamoDBJson($ctx.identity.sub)
+          }
+        }
+      ResponseMappingTemplate: "$util.toJson($ctx.result)"
+
+  AppSyncSaveQuestionnaireMutationResolver:
+    Type: "AWS::AppSync::Resolver"
+    DependsOn: AppSyncSchema
+    Properties:
+      ApiId: !GetAtt AppSyncApi.ApiId
+      TypeName: Mutation
+      FieldName: saveQuestionnaire
+      DataSourceName: !GetAtt AppSyncQuestionnairesTableDataSource.Name
+      RequestMappingTemplate: |
+        {
+          "version": "2017-02-28",
+          "operation": "PutItem",
+          "key": {
+            "QuestionnaireId": $util.dynamodb.toDynamoDBJson($ctx.args.QuestionnaireId),
+            "UserId": $util.dynamodb.toDynamoDBJson($ctx.identity.sub)
+          },
+          "attributeValues": {
+            "title": $util.dynamodb.toDynamoDBJson($ctx.args.title),
+            "content": $util.dynamodb.toDynamoDBJson($ctx.args.content)
+          }
+        }
+      ResponseMappingTemplate: "$util.toJson($ctx.result)"
+
+  AppSyncDeleteQuestionnaireMutationResolver:
+    Type: "AWS::AppSync::Resolver"
+    DependsOn: AppSyncSchema
+    Properties:
+      ApiId: !GetAtt AppSyncApi.ApiId
+      TypeName: Mutation
+      FieldName: deleteQuestionnaire
+      DataSourceName: !GetAtt AppSyncQuestionnairesTableDataSource.Name
+      RequestMappingTemplate: |
+        {
+          "version": "2017-02-28",
+          "operation": "DeleteItem",
+          "key": {
+            "QuestionnaireId": $util.dynamodb.toDynamoDBJson($ctx.args.QuestionnaireId),
+            "UserId": $util.dynamodb.toDynamoDBJson($ctx.identity.sub)
+          }
+        }
+      ResponseMappingTemplate: "$util.toJson($ctx.result)"
+
+Outputs:
+  GraphQLApiEndpoint:
+    Description: The URL to the GraphQL Endpoint
+    Value: !GetAtt AppSyncApi.GraphQLUrl
+  GraphQLApiId:
+    Description: The API ID of the GraphQL API
+    Value: !GetAtt AppSyncApi.ApiId
