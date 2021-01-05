@@ -67,12 +67,12 @@ Resources:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
 
-outputs:
+Outputs:
   DBRoleARN:
-    description: the pool id of the cognito user pool
-    value: 
+    Description: The ARN of the role that can connect to the table
+    Value: 
       !GetAtt DynamoDBRole.Arn
   QuestionnaireTableID:
-    description: the pool id of the cognito user pool
-    value: 
+    Description: The ID of the tanble
+    Value: 
       !Ref QuestionnairesTable
