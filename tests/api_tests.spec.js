@@ -1,4 +1,5 @@
 import Amplify, { API, graphqlOperation, Auth } from "aws-amplify";
+import { clearDatabase } from "./clearDB";
 
 const aws_config = {
   aws_project_region: "eu-west-1",
@@ -24,9 +25,10 @@ beforeEach(async () => {
     },
     error => console.log("FAILED TO LOGIN:", error)
   );
+  clearDatabase();
 });
 
-it("fetches things", async () => {
+it("Returns an empty array if there are no records in the DB", async () => {
   const query = graphqlOperation(`query MyQuery {
     getQuestionnaires {
     questionnaires {
@@ -40,6 +42,37 @@ it("fetches things", async () => {
       expect(result.data).toEqual({
         getQuestionnaires: {
           questionnaires: []
+        }
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      throw err;
+    });
+});
+
+it("Adds a questionnaire and then checks it is there", async () => {
+  const apiCall = graphqlOperation(`mutation MyMutation {
+    saveQuestionnaire(content: "Some content", QuestionnaireId: "1234", title: "This is the title") {
+      title
+      content
+    }
+  }`);
+  await API.graphql(apiCall);
+
+  const query = graphqlOperation(`query MyQuery {
+    getQuestionnaires {
+    questionnaires {
+      content
+    }
+  }
+}`);
+  await API.graphql(query)
+    .then(result => {
+      console.log("result", result);
+      expect(result.data).toEqual({
+        getQuestionnaires: {
+          questionnaires: [{ content: "Some content" }]
         }
       });
     })
