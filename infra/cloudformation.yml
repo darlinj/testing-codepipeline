@@ -16,7 +16,7 @@ Parameters:
 
 Resources:
   CognitoPool:
-    Type: AWS::Cloudformation::Stack
+    Type: 'AWS::CloudFormation::Stack'
     Properties:
       TemplateURL:
         Fn::Sub: "${SourceBucket}/infra/cognito.yml"
