@@ -1,5 +1,5 @@
 ---
-Description: create DynamoDB table
+Description: create DynamoDB table for Appsync
 
 Parameters:
   APIName:
