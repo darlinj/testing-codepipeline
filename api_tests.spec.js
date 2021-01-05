@@ -37,7 +37,14 @@ it("fetches things", async () => {
   await API.graphql(query)
     .then(result => {
       console.log("result", result);
-      expect(result.data).toEqual("Meta stuff: somedata Inserted text");
+      expect(result.data).toEqual({
+        getQuestionnaires: {
+          questionnaires: [
+            { content: "Some content2" },
+            { content: "Some content2" }
+          ]
+        }
+      });
     })
     .catch(err => {
       console.log(err);
