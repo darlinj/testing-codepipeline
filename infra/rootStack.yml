@@ -21,7 +21,7 @@ Resources:
       TemplateURL:
         Fn::Sub: "${SourceBucket}/infra/cognito.yml"
       Parameters:
-        APIName: 
+        NamePrefix: 
           Ref: APIName
   DynamoDbTable:
     Type: 'AWS::CloudFormation::Stack'
@@ -29,7 +29,7 @@ Resources:
       TemplateURL:
         Fn::Sub: "${SourceBucket}/infra/dynamoDB.yml"
       Parameters:
-        APIName: 
+        NamePrefix: 
           Ref: APIName
   AppSyncApi:
     Type: "AWS::AppSync::GraphQLApi"

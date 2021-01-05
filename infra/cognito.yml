@@ -2,7 +2,7 @@
 Description: Set up Cognito pool
 
 Parameters:
-  APIName:
+  NamePrefix:
     Type: String
     Description: Name of the API - used to generate unique names for resources
     MinLength: 3
@@ -14,7 +14,7 @@ Resources:
     Type: AWS::IAM::Role
     Description: "An IAM Role to allow Cognito to send SNS messages"
     Properties:
-      RoleName: !Sub ${APIName}-cognito-sns-role
+      RoleName: !Sub ${NamePrefix}-cognito-sns-role
       ManagedPolicyArns:
         - Ref: CognitoSNSPolicy
       AssumeRolePolicyDocument:
@@ -42,12 +42,12 @@ Resources:
     Type: "AWS::Cognito::UserPool"
     Description: "A Cognito user pool for authenticating users"
     Properties:
-      UserPoolName: !Sub ${APIName}-user-pool
+      UserPoolName: !Sub ${NamePrefix}-user-pool
       AutoVerifiedAttributes:
         - phone_number
       MfaConfiguration: "OFF"
       SmsConfiguration:
-        ExternalId: !Sub ${APIName}-external
+        ExternalId: !Sub ${NamePrefix}-external
         SnsCallerArn: !GetAtt SNSRole.Arn
       Schema:
         - Name: name
@@ -67,7 +67,7 @@ Resources:
     Type: "AWS::Cognito::UserPoolClient"
     Description: "App Client used by AWS AppSync"
     Properties:
-      ClientName: !Sub ${APIName}-appsync-client
+      ClientName: !Sub ${NamePrefix}-appsync-client
       GenerateSecret: false
       UserPoolId: !Ref UserPool
       ExplicitAuthFlows:

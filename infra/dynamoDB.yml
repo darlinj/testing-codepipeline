@@ -2,7 +2,7 @@
 Description: create DynamoDB table for Appsync
 
 Parameters:
-  APIName:
+  NamePrefix:
     Type: String
     Description: Name of the API - used to generate unique names for resources
     MinLength: 3
@@ -13,7 +13,7 @@ Resources:
   DynamoDBRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub ${APIName}-appsync-dynamodb-role
+      RoleName: !Sub ${NamePrefix}-appsync-dynamodb-role
       ManagedPolicyArns:
         - Ref: AppSyncDynamoDBPolicy
       AssumeRolePolicyDocument:
@@ -52,7 +52,7 @@ Resources:
     Type: "AWS::DynamoDB::Table"
     Description: "Data store for AWS AppSync Questionnaires Type"
     Properties:
-      TableName: !Sub ${APIName}-questionnaires-table
+      TableName: !Sub ${NamePrefix}-questionnaires-table
       AttributeDefinitions:
         - AttributeName: "QuestionnaireId"
           AttributeType: "S"
