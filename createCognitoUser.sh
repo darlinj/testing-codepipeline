@@ -8,7 +8,7 @@ fi
 if [[ -z "${TEST_USER_PASSWORD}" ]]; then
   PASSWORD=${2}
 else
-  PASSWORD=${TEST_USERNAME}
+  PASSWORD=${TEST_USER_PASSWORD}
 fi
 if [[ -z "${TEST_USERNAME}" ]]; then
   PROFILE="--profile admin"
