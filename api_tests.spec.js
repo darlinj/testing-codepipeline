@@ -39,10 +39,7 @@ it("fetches things", async () => {
       console.log("result", result);
       expect(result.data).toEqual({
         getQuestionnaires: {
-          questionnaires: [
-            { content: "Some content2" },
-            { content: "Some content2" }
-          ]
+          questionnaires: []
         }
       });
     })
