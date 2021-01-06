@@ -84,9 +84,9 @@ Resources:
              "expression": "UserId = :userid",
              "expressionValues" : {
                 ":userid" : $util.dynamodb.toDynamoDBJson($ctx.identity.sub)
-             }
-          }
-       }
+              }
+           }
+        }
       ResponseMappingTemplate: |
         {
           "questionnaires": $util.toJson($ctx.result.items)
