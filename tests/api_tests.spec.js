@@ -1,5 +1,5 @@
 import Amplify, { API, graphqlOperation, Auth } from "aws-amplify";
-import { clearDatabase } from "./clearDB";
+import { clearDatabase, addQuestionnaireForAnotherUser } from "./DBAdmin";
 
 const aws_config = {
   aws_project_region: "eu-west-1",
@@ -31,12 +31,14 @@ const runGraphqlOperation = query_string => {
 
 const getQuestionnaires = () => {
   return runGraphqlOperation(`query MyQuery {
-    getQuestionnaires {
+  getQuestionnaires {
     questionnaires {
+      title
       content
-      }
+      QuestionnaireId
     }
-  }`);
+  }
+}`);
 };
 
 const saveQuestionnaire = (id, content, title) => {
@@ -48,8 +50,8 @@ const saveQuestionnaire = (id, content, title) => {
   }`);
 };
 
-it("Returns an empty array if there are no records in the DB", () => {
-  getQuestionnaires().then(result => {
+it("Returns an empty array if there are no records in the DB", async () => {
+  await getQuestionnaires().then(result => {
     expect(result.data).toEqual({
       getQuestionnaires: {
         questionnaires: []
@@ -61,10 +63,36 @@ it("Returns an empty array if there are no records in the DB", () => {
 it("Adds a questionnaire and then checks it is there", async () => {
   await saveQuestionnaire("1234", "Some content", "Some title");
 
-  getQuestionnaires().then(result => {
+  await getQuestionnaires().then(result => {
     expect(result.data).toEqual({
       getQuestionnaires: {
-        questionnaires: [{ content: "Some content" }]
+        questionnaires: [
+          {
+            QuestionnaireId: "1234",
+            content: "Some content",
+            title: "Some title"
+          }
+        ]
+      }
+    });
+  });
+});
+
+it("Can't see items that don't belong to this user", async () => {
+  await addQuestionnaireForAnotherUser();
+
+  await saveQuestionnaire("1234", "Some content", "Some title");
+
+  await getQuestionnaires().then(result => {
+    expect(result.data).toEqual({
+      getQuestionnaires: {
+        questionnaires: [
+          {
+            QuestionnaireId: "1234",
+            content: "Some content",
+            title: "Some title"
+          }
+        ]
       }
     });
   });
