@@ -46,7 +46,9 @@ Resources:
               - dynamodb:Scan
               - dynamodb:BatchGetItem
               - dynamodb:BatchWriteItem
-            Resource: !Join [ "", [ !GetAtt QuestionnairesTable.Arn, "*" ] ]
+            Resource: 
+              - !Join [ "", [ !GetAtt QuestionnairesTable.Arn, "*" ] ]
+              - !Join [ "", [ !GetAtt QuestionsTable.Arn, "*" ] ]
 
   QuestionnairesTable:
     Type: "AWS::DynamoDB::Table"
