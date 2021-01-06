@@ -73,6 +73,9 @@ Resources:
               KeyType: "HASH"
           Projection:
             ProjectionType: "ALL"
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
 Outputs:
   DBRoleARN:
     Description: The ARN of the role that can connect to the table
