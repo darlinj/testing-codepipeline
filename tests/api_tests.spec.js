@@ -41,6 +41,16 @@ const getQuestionnaires = () => {
 }`);
 };
 
+const getQuestionnaire = id => {
+  return runGraphqlOperation(`query MyQuery {
+  getQuestionnaire(QuestionnaireId: "${id}") {
+    title
+    content
+    QuestionnaireId
+  }
+}`);
+};
+
 const saveQuestionnaire = (id, content, title) => {
   return runGraphqlOperation(`mutation MyMutation {
     saveQuestionnaire(content: "${content}", QuestionnaireId: "${id}", title: "${title}") {
@@ -93,6 +103,20 @@ it("Can't see items that don't belong to this user", async () => {
             title: "Some title"
           }
         ]
+      }
+    });
+  });
+});
+
+it("Can get an individual Questionnaire by ID", async () => {
+  await saveQuestionnaire("1234", "Some content", "Some title");
+
+  await getQuestionnaire("1234").then(result => {
+    expect(result.data).toEqual({
+      getQuestionnaire: {
+        QuestionnaireId: "1234",
+        content: "Some content",
+        title: "Some title"
       }
     });
   });
