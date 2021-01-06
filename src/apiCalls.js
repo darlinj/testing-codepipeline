@@ -43,3 +43,15 @@ export const saveQuestionnaire = (id, content, title) => {
     }
   }`);
 };
+
+export const getQuestions = () => {
+  return runGraphqlOperation(`query MyQuery {
+  getQuestions {
+    questions {
+      id
+      questionnaireId
+      question
+    }
+  }
+}`);
+};

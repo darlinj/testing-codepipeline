@@ -42,8 +42,18 @@ Resources:
         type Questionnaires {
           questionnaires: [Questionnaire!]!
         }
+        type Question {
+          id: ID!
+          QuestionnaireId: ID!
+          question: String
+          content: String
+        }
+        type Questions {
+          questions: [Question!]!
+        }
         type Query {
-          getQuestionnaires(limit: Int, nextToken: String): Questionnaires!
+          getQuestions: Questions!
+          getQuestionnaires: Questionnaires!
           getQuestionnaire(QuestionnaireId: ID!): Questionnaire
         }
         type Mutation {
