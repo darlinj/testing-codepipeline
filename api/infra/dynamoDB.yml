@@ -76,12 +76,48 @@ Resources:
           ProvisionedThroughput:
             ReadCapacityUnits: 5
             WriteCapacityUnits: 5
+  QuestionsTable:
+    Type: "AWS::DynamoDB::Table"
+    Description: "Data store for AWS AppSync Questions Type"
+    Properties:
+      TableName: !Sub ${NamePrefix}-questions-table
+      AttributeDefinitions:
+        - AttributeName: "id"
+          AttributeType: "S"
+        - AttributeName: "UserId"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "id"
+          KeyType: "HASH"
+        - AttributeName: "UserId"
+          KeyType: "RANGE"
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      GlobalSecondaryIndexes:
+        - IndexName: "UserId-index"
+          KeySchema: 
+            - AttributeName: "UserId"
+              KeyType: "HASH"
+          Projection:
+            ProjectionType: "ALL"
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
 Outputs:
   DBRoleARN:
     Description: The ARN of the role that can connect to the table
     Value: 
       !GetAtt DynamoDBRole.Arn
   QuestionnaireTableID:
-    Description: The ID of the tanble
+    Description: The ID of the questionnaires table
     Value: 
       !Ref QuestionnairesTable
+  QuestionTableID:
+    Description: The ID of the questions table
+    Value: 
+      !Ref QuestionsTable
+  QuestionTableID:
+    Description: The ID of the question table
+    Value: 
+      !Ref QuestionsTable

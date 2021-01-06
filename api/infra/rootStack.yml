@@ -43,10 +43,14 @@ Resources:
           Fn::GetAtt:
             - CognitoPool
             - Outputs.UserPoolId
-        TableName: 
+        QuestionnaireTableName: 
           Fn::GetAtt:
             - DynamoDbTable
             - Outputs.QuestionnaireTableID
+        QuestionTableName: 
+          Fn::GetAtt:
+            - DynamoDbTable
+            - Outputs.QuestionTableID
         ServiceRoleArn: 
           Fn::GetAtt:
             - DynamoDbTable

@@ -14,7 +14,10 @@ Parameters:
   ServiceRoleArn:
     Type: String
     MinLength: 3
-  TableName:
+  QuestionnaireTableName:
+    Type: String
+    MinLength: 3
+  QuestionTableName:
     Type: String
     MinLength: 3
 
@@ -73,7 +76,19 @@ Resources:
       Type: AMAZON_DYNAMODB
       ServiceRoleArn: !Ref ServiceRoleArn
       DynamoDBConfig:
-        TableName: !Ref TableName
+        TableName: !Ref QuestionnaireTableName
+        AwsRegion: !Sub ${AWS::Region}
+
+  AppSyncQuestionsTableDataSource:
+    Type: "AWS::AppSync::DataSource"
+    Properties:
+      ApiId: !GetAtt AppSyncApi.ApiId
+      Name: !Sub ${NamePrefix}_questions
+      Description: "The Questions Table AppSync Data Source"
+      Type: AMAZON_DYNAMODB
+      ServiceRoleArn: !Ref ServiceRoleArn
+      DynamoDBConfig:
+        TableName: !Ref QuestionTableName
         AwsRegion: !Sub ${AWS::Region}
 
 
@@ -161,6 +176,31 @@ Resources:
           }
         }
       ResponseMappingTemplate: "$util.toJson($ctx.result)"
+
+  AppSyncGetQuestionsQueryResolver:
+    Type: "AWS::AppSync::Resolver"
+    DependsOn: AppSyncSchema
+    Properties:
+      ApiId: !GetAtt AppSyncApi.ApiId
+      TypeName: Query
+      FieldName: getQuestions
+      DataSourceName: !GetAtt AppSyncQuestionsTableDataSource.Name
+      RequestMappingTemplate: |
+        {
+          "version": "2017-02-28",
+          "operation" : "Query",
+          "index" : "UserId-index",
+          "query" : {
+             "expression": "UserId = :userid",
+             "expressionValues" : {
+                ":userid" : $util.dynamodb.toDynamoDBJson($ctx.identity.sub)
+              }
+           }
+        }
+      ResponseMappingTemplate: |
+        {
+          "questions": $util.toJson($ctx.result.items)
+        }
 
 Outputs:
   GraphQLApiEndpoint:

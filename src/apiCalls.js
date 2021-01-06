@@ -49,7 +49,7 @@ export const getQuestions = () => {
   getQuestions {
     questions {
       id
-      questionnaireId
+      QuestionnaireId
       question
     }
   }
