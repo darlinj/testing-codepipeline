@@ -1,6 +1,6 @@
 import Amplify, { API, graphqlOperation, Auth } from "aws-amplify";
 import { clearDatabase, addQuestionnaireForAnotherUser } from "./DBAdmin";
-import awsConfig from "../aws_config";
+import awsConfig from "../../aws_config";
 
 Amplify.configure(awsConfig);
 

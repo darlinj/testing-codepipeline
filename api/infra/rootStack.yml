@@ -19,7 +19,7 @@ Resources:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
       TemplateURL:
-        Fn::Sub: "${SourceBucket}/infra/cognito.yml"
+        Fn::Sub: "${SourceBucket}/api/infra/cognito.yml"
       Parameters:
         NamePrefix: 
           Ref: APIName
@@ -27,7 +27,7 @@ Resources:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
       TemplateURL:
-        Fn::Sub: "${SourceBucket}/infra/dynamoDB.yml"
+        Fn::Sub: "${SourceBucket}/api/infra/dynamoDB.yml"
       Parameters:
         NamePrefix: 
           Ref: APIName
@@ -35,7 +35,7 @@ Resources:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
       TemplateURL:
-        Fn::Sub: "${SourceBucket}/infra/appsyncAPI.yml"
+        Fn::Sub: "${SourceBucket}/api/infra/appsyncAPI.yml"
       Parameters:
         NamePrefix: 
           Ref: APIName
