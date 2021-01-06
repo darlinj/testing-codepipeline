@@ -71,6 +71,8 @@ Resources:
           KeySchema: 
             - AttributeName: "UserId"
               KeyType: "HASH"
+          Projection:
+            ProjectionType: "ALL"
 Outputs:
   DBRoleARN:
     Description: The ARN of the role that can connect to the table
