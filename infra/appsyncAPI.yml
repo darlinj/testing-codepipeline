@@ -78,11 +78,15 @@ Resources:
       RequestMappingTemplate: |
         {
           "version": "2017-02-28",
-          "operation": "Scan",
-          "key": {
-            "UserId": $util.dynamodb.toDynamoDBJson($ctx.identity.sub)
+          "operation" : "Query",
+          "index" : "UserId-index",
+          "query" : {
+             "expression": "UserId = :userid",
+             "expressionValues" : {
+                ":userid" : $util.dynamodb.toDynamoDBJson($ctx.identity.sub)
+             }
           }
-        }
+       }
       ResponseMappingTemplate: |
         {
           "questionnaires": $util.toJson($ctx.result.items)

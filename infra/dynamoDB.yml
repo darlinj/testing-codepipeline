@@ -66,7 +66,11 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
-
+      GlobalSecondaryIndexes:
+        - IndexName: "UserId-index"
+          KeySchema: 
+            - AttributeName: "UserId"
+              KeyType: "HASH"
 Outputs:
   DBRoleARN:
     Description: The ARN of the role that can connect to the table
