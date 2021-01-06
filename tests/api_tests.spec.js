@@ -16,68 +16,56 @@ const aws_config = {
 Amplify.configure(aws_config);
 
 beforeEach(async () => {
-  await Auth.signIn(
-    process.env.TEST_USERNAME,
-    process.env.TEST_USER_PASSWORD
-  ).then(
-    user => {
-      console.log("Sucessfully signed in", user.username);
-    },
-    error => console.log("FAILED TO LOGIN:", error)
-  );
-  clearDatabase();
+  await login();
+  await clearDatabase();
 });
 
-it("Returns an empty array if there are no records in the DB", async () => {
-  const query = graphqlOperation(`query MyQuery {
+const login = async () => {
+  await Auth.signIn(process.env.TEST_USERNAME, process.env.TEST_USER_PASSWORD);
+};
+
+const runGraphqlOperation = query_string => {
+  const query = graphqlOperation(query_string);
+  return API.graphql(query);
+};
+
+const getQuestionnaires = () => {
+  return runGraphqlOperation(`query MyQuery {
     getQuestionnaires {
     questionnaires {
       content
+      }
     }
-  }
-}`);
-  await API.graphql(query)
-    .then(result => {
-      console.log("result", result);
-      expect(result.data).toEqual({
-        getQuestionnaires: {
-          questionnaires: []
-        }
-      });
-    })
-    .catch(err => {
-      console.log(err);
-      throw err;
-    });
-});
+  }`);
+};
 
-it("Adds a questionnaire and then checks it is there", async () => {
-  const apiCall = graphqlOperation(`mutation MyMutation {
-    saveQuestionnaire(content: "Some content", QuestionnaireId: "1234", title: "This is the title") {
+const saveQuestionnaire = (id, content, title) => {
+  return runGraphqlOperation(`mutation MyMutation {
+    saveQuestionnaire(content: "${content}", QuestionnaireId: "${id}", title: "${title}") {
       title
       content
     }
   }`);
-  await API.graphql(apiCall);
+};
 
-  const query = graphqlOperation(`query MyQuery {
-    getQuestionnaires {
-    questionnaires {
-      content
-    }
-  }
-}`);
-  await API.graphql(query)
-    .then(result => {
-      console.log("result", result);
-      expect(result.data).toEqual({
-        getQuestionnaires: {
-          questionnaires: [{ content: "Some content" }]
-        }
-      });
-    })
-    .catch(err => {
-      console.log(err);
-      throw err;
+it("Returns an empty array if there are no records in the DB", () => {
+  getQuestionnaires().then(result => {
+    expect(result.data).toEqual({
+      getQuestionnaires: {
+        questionnaires: []
+      }
     });
+  });
+});
+
+it("Adds a questionnaire and then checks it is there", async () => {
+  await saveQuestionnaire("1234", "Some content", "Some title");
+
+  getQuestionnaires().then(result => {
+    expect(result.data).toEqual({
+      getQuestionnaires: {
+        questionnaires: [{ content: "Some content" }]
+      }
+    });
+  });
 });
