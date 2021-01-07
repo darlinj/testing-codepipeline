@@ -3,11 +3,11 @@ version: 0.2
 phases:
   build:
     commands:
-      - echo $CODEBUILD_SRC_DIR
       - echo $CODEBUILD_BUILD_ID
-        echo `pwd`
-      - CLOUDFORMATION_SRC_DIR="api/infra"
-      - CFN_TMP=`mktemp` && aws cloudformation package --template-file "$CLOUDFORMATION_SRC_DIR/rootStack.yml" --s3-bucket "pipeline-artifacts-bannana" --s3-prefix "packagedCloudformationAssets/$CODEBUILD_BUILD_ID" --output-template-file "$CLOUDFORMATION_SRC_DIR/packagedTemplate.yml"
+      - echo `pwd`
+      - echo $DEPLOYMENT_BUCKET
+      - CLOUDFORMATION_SRC_DIR="$CODEBUILD_SRC_DIR/api/infra"
+      - aws cloudformation package --template-file "$CLOUDFORMATION_SRC_DIR/rootStack.yml" --s3-bucket "pipeline-artifacts-bannana" --s3-prefix "packagedCloudformationAssets/$CODEBUILD_BUILD_ID" --output-template-file "$CLOUDFORMATION_SRC_DIR/packagedTemplate.yml"
 
 artifacts:
   secondary-artifacts:
