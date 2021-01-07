@@ -8,11 +8,6 @@ Parameters:
     MinLength: 3
     MaxLength: 20
     AllowedPattern: '^[a-zA-Z][a-zA-Z0-9_]*$'
-  SourceBucket:
-    Type: String
-    Description: Bucket where the source is copied by the previous stage
-    MinLength: 10
-    MaxLength: 255
 
 Resources:
   CognitoPool:

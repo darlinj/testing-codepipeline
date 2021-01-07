@@ -1,3 +1,15 @@
+# This project is to test out the capabilities of cloudformation and CodePipeline
+
+## To create a local development API do the following:
+
+run
+./createDevAPI.sh
+Copy the relevant outputs from the cloudformation stack into the top of setEnv file
+run
+./api/infra/createCognitoUser.sh
+run
+npm test
+If everything passes then you are good
 
 Updating the stack locally (Assumes that the Source bucket is up to date)
 aws cloudformation update-stack --stack-name pipeline-appsync-api-cloudformation --template-body file://infra/cloudformation.yml --parameters ParameterKey=APIName,ParameterValue=PipelineAPI ParameterKey=SourceBucket,ParameterValue="https://pipeline-artifacts-bannana.s3-eu-west-1.amazonaws.com" --capabilities CAPABILITY_NAMED_IAM  CAPABILITY_AUTO_EXPAND

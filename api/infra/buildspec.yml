@@ -3,9 +3,6 @@ version: 0.2
 phases:
   build:
     commands:
-      - echo $CODEBUILD_BUILD_ID
-      - echo `pwd`
-      - echo $DEPLOYMENT_BUCKET
       - CLOUDFORMATION_SRC_DIR="$CODEBUILD_SRC_DIR/api/infra"
       - aws cloudformation package --template-file "$CLOUDFORMATION_SRC_DIR/rootStack.yml" --s3-bucket "$DEPLOYMENT_BUCKET" --s3-prefix "packagedCloudformationAssets/$CODEBUILD_BUILD_ID" --output-template-file "$CLOUDFORMATION_SRC_DIR/packagedTemplate.yml"
 
