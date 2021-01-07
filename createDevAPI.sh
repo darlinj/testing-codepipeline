@@ -1,6 +1,6 @@
 #!/bin/bash
 S3_BUCKET_NAME="pipeline-artifacts-bannana"
-STACK_NAME="DevAPI"
+STACK_NAME=${API_NAME}
 
 if aws s3 ls "s3://$S3_BUCKET_NAME" 2>&1 | grep -q 'NoSuchBucket'
 then

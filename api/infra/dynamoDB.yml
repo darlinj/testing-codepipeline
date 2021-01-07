@@ -56,12 +56,12 @@ Resources:
     Properties:
       TableName: !Sub ${NamePrefix}-questionnaires-table
       AttributeDefinitions:
-        - AttributeName: "QuestionnaireId"
+        - AttributeName: "id"
           AttributeType: "S"
         - AttributeName: "UserId"
           AttributeType: "S"
       KeySchema:
-        - AttributeName: "QuestionnaireId"
+        - AttributeName: "id"
           KeyType: "HASH"
         - AttributeName: "UserId"
           KeyType: "RANGE"

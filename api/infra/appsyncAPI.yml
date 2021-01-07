@@ -38,7 +38,7 @@ Resources:
       ApiId: !GetAtt AppSyncApi.ApiId
       Definition: |
         type Questionnaire {
-          QuestionnaireId: ID!
+          id: ID!
           title: String
           content: String
         }
@@ -49,7 +49,6 @@ Resources:
           id: ID!
           QuestionnaireId: ID!
           question: String
-          content: String
         }
         type Questions {
           questions: [Question!]!
@@ -57,11 +56,12 @@ Resources:
         type Query {
           getQuestions: Questions!
           getQuestionnaires: Questionnaires!
-          getQuestionnaire(QuestionnaireId: ID!): Questionnaire
+          getQuestionnaire(id: ID!): Questionnaire
         }
         type Mutation {
-          saveQuestionnaire(QuestionnaireId: ID!, title: String!, content: String!): Questionnaire
-          deleteQuestionnaire(QuestionnaireId: ID!): Questionnaire
+          saveQuestion(id: ID!, QuestionnaireId: ID!, question: String!): Question
+          saveQuestionnaire(id: ID!, title: String!, content: String!): Questionnaire
+          deleteQuestionnaire(id: ID!): Questionnaire
         }
         type Schema {
           query: Query
@@ -129,7 +129,7 @@ Resources:
           "version": "2017-02-28",
           "operation": "GetItem",
           "key": {
-            "QuestionnaireId": $util.dynamodb.toDynamoDBJson($ctx.args.QuestionnaireId),
+            "id": $util.dynamodb.toDynamoDBJson($ctx.args.id),
             "UserId": $util.dynamodb.toDynamoDBJson($ctx.identity.sub)
           }
         }
@@ -148,7 +148,7 @@ Resources:
           "version": "2017-02-28",
           "operation": "PutItem",
           "key": {
-            "QuestionnaireId": $util.dynamodb.toDynamoDBJson($ctx.args.QuestionnaireId),
+            "id": $util.dynamodb.toDynamoDBJson($ctx.args.id),
             "UserId": $util.dynamodb.toDynamoDBJson($ctx.identity.sub)
           },
           "attributeValues": {
@@ -171,7 +171,7 @@ Resources:
           "version": "2017-02-28",
           "operation": "DeleteItem",
           "key": {
-            "QuestionnaireId": $util.dynamodb.toDynamoDBJson($ctx.args.QuestionnaireId),
+            "id": $util.dynamodb.toDynamoDBJson($ctx.args.id),
             "UserId": $util.dynamodb.toDynamoDBJson($ctx.identity.sub)
           }
         }
@@ -201,6 +201,29 @@ Resources:
         {
           "questions": $util.toJson($ctx.result.items)
         }
+
+  AppSyncSaveQuestionMutationResolver:
+    Type: "AWS::AppSync::Resolver"
+    DependsOn: AppSyncSchema
+    Properties:
+      ApiId: !GetAtt AppSyncApi.ApiId
+      TypeName: Mutation
+      FieldName: saveQuestion
+      DataSourceName: !GetAtt AppSyncQuestionsTableDataSource.Name
+      RequestMappingTemplate: |
+        {
+          "version": "2017-02-28",
+          "operation": "PutItem",
+          "key": {
+            "id": $util.dynamodb.toDynamoDBJson($ctx.args.id),
+            "UserId": $util.dynamodb.toDynamoDBJson($ctx.identity.sub)
+          },
+          "attributeValues": {
+            "QuestionnaireId": $util.dynamodb.toDynamoDBJson($ctx.args.QuestionnaireId),
+            "question": $util.dynamodb.toDynamoDBJson($ctx.args.question)
+          }
+        }
+      ResponseMappingTemplate: "$util.toJson($ctx.result)"
 
 Outputs:
   GraphQLApiEndpoint:

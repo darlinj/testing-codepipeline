@@ -11,7 +11,7 @@ export const getQuestionnaires = () => {
     questionnaires {
       title
       content
-      QuestionnaireId
+      id
     }
   }
 }`);
@@ -19,17 +19,17 @@ export const getQuestionnaires = () => {
 
 export const getQuestionnaire = id => {
   return runGraphqlOperation(`query MyQuery {
-  getQuestionnaire(QuestionnaireId: "${id}") {
+  getQuestionnaire(id: "${id}") {
     title
     content
-    QuestionnaireId
+    id
   }
 }`);
 };
 
 export const deleteQuestionnaire = id => {
   return runGraphqlOperation(`mutation MyMutation {
-  deleteQuestionnaire(QuestionnaireId: "${id}") {
+  deleteQuestionnaire(id: "${id}") {
     content
   }
 }`);
@@ -37,7 +37,7 @@ export const deleteQuestionnaire = id => {
 
 export const saveQuestionnaire = (id, content, title) => {
   return runGraphqlOperation(`mutation MyMutation {
-    saveQuestionnaire(content: "${content}", QuestionnaireId: "${id}", title: "${title}") {
+    saveQuestionnaire(content: "${content}", id: "${id}", title: "${title}") {
       title
       content
     }
@@ -54,4 +54,14 @@ export const getQuestions = () => {
     }
   }
 }`);
+};
+
+export const saveQuestion = (id, questionnaireId, question) => {
+  return runGraphqlOperation(`mutation MyMutation {
+    saveQuestion(id: "${id}", QuestionnaireId: "${questionnaireId}", question: "${question}") {
+      id
+      QuestionnaireId
+      question
+    }
+  }`);
 };

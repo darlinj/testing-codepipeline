@@ -10,9 +10,13 @@ import awsConfig from "../../aws_config";
 
 Amplify.configure(awsConfig);
 
-beforeEach(async () => {
+beforeAll(async () => {
   await login();
-  await clearDatabase();
+});
+
+beforeEach(async () => {
+  const tableName = `${process.env.API_NAME}-questionnaires-table`;
+  await clearDatabase(tableName);
 });
 
 const login = async () => {
@@ -38,7 +42,7 @@ describe("The Questionnaire API", () => {
         getQuestionnaires: {
           questionnaires: [
             {
-              QuestionnaireId: "1234",
+              id: "1234",
               content: "Some content",
               title: "Some title"
             }
@@ -49,7 +53,8 @@ describe("The Questionnaire API", () => {
   });
 
   it("Can't see items that don't belong to this user", async () => {
-    await addQuestionnaireForAnotherUser();
+    const tableName = `${process.env.API_NAME}-questionnaires-table`;
+    await addQuestionnaireForAnotherUser(tableName);
 
     await saveQuestionnaire("1234", "Some content", "Some title");
 
@@ -58,7 +63,7 @@ describe("The Questionnaire API", () => {
         getQuestionnaires: {
           questionnaires: [
             {
-              QuestionnaireId: "1234",
+              id: "1234",
               content: "Some content",
               title: "Some title"
             }
@@ -74,7 +79,7 @@ describe("The Questionnaire API", () => {
     await getQuestionnaire("1234").then(result => {
       expect(result.data).toEqual({
         getQuestionnaire: {
-          QuestionnaireId: "1234",
+          id: "1234",
           content: "Some content",
           title: "Some title"
         }
@@ -88,7 +93,7 @@ describe("The Questionnaire API", () => {
     await getQuestionnaire("1234").then(result => {
       expect(result.data).toEqual({
         getQuestionnaire: {
-          QuestionnaireId: "1234",
+          id: "1234",
           content: "Some content",
           title: "Some title"
         }

@@ -1,7 +1,7 @@
 import Amplify, { Auth } from "aws-amplify";
 import { clearDatabase, addQuestionForAnotherUser } from "./DBAdmin";
 import {
-  //  saveQuestion,
+  saveQuestion,
   //  getQuestion,
   //  deleteQuestion,
   getQuestions
@@ -12,7 +12,7 @@ Amplify.configure(awsConfig);
 
 beforeEach(async () => {
   await login();
-  //  await clearDatabase();
+  await clearDatabase(`${process.env.API_NAME}-questions-table`);
 });
 
 const login = async () => {
@@ -30,24 +30,24 @@ describe("The Question API", () => {
     });
   });
 
-  //  it("Adds a question and then checks it is there", async () => {
-  //    await saveQuestion("1234", "Some content", "Some title");
-  //
-  //    await getQuestions().then(result => {
-  //      expect(result.data).toEqual({
-  //        getQuestions: {
-  //          questions: [
-  //            {
-  //              QuestionId: "1234",
-  //              content: "Some content",
-  //              title: "Some title"
-  //            }
-  //          ]
-  //        }
-  //      });
-  //    });
-  //  });
-  //
+  it("Adds a question and then checks it is there", async () => {
+    await saveQuestion("1234", "12345", "Some question");
+
+    await getQuestions().then(result => {
+      expect(result.data).toEqual({
+        getQuestions: {
+          questions: [
+            {
+              id: "1234",
+              QuestionnaireId: "12345",
+              question: "Some question"
+            }
+          ]
+        }
+      });
+    });
+  });
+
   //  it("Can't see items that don't belong to this user", async () => {
   //    await addQuestionForAnotherUser();
   //

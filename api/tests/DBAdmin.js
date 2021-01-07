@@ -8,12 +8,11 @@ const docClient = new AWS.DynamoDB({
   convertResponseTypes: false
 });
 
-export const addQuestionnaireForAnotherUser = async () => {
-  const tableName = "PipelineAPI-questionnaires-table";
+export const addQuestionnaireForAnotherUser = async tableName => {
   const params = {
     TableName: tableName,
     Item: {
-      QuestionnaireId: {
+      id: {
         S: "OtherUserID123"
       },
       UserId: {
@@ -34,8 +33,7 @@ export const addQuestionnaireForAnotherUser = async () => {
   });
 };
 
-export const clearDatabase = async () => {
-  const tableName = "PipelineAPI-questionnaires-table";
+export const clearDatabase = async tableName => {
   const params = {
     TableName: tableName
   };
@@ -44,7 +42,7 @@ export const clearDatabase = async () => {
     const deleteParams = {
       TableName: tableName,
       Key: {
-        QuestionnaireId: item.QuestionnaireId,
+        id: item.id,
         UserId: item.UserId
       }
     };
@@ -58,5 +56,3 @@ export const clearDatabase = async () => {
     });
   });
 };
-
-clearDatabase();
