@@ -18,24 +18,21 @@ Resources:
   CognitoPool:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
-      TemplateURL:
-        Fn::Sub: "${SourceBucket}/api/infra/cognito.yml"
+      TemplateURL: "./cognito.yml"
       Parameters:
         NamePrefix: 
           Ref: APIName
   DynamoDbTable:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
-      TemplateURL:
-        Fn::Sub: "${SourceBucket}/api/infra/dynamoDB.yml"
+      TemplateURL: "./dynamoDB.yml"
       Parameters:
         NamePrefix: 
           Ref: APIName
   AppsyncAPI:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
-      TemplateURL:
-        Fn::Sub: "${SourceBucket}/api/infra/appsyncAPI.yml"
+      TemplateURL: "./appsyncAPI.yml"
       Parameters:
         NamePrefix: 
           Ref: APIName
