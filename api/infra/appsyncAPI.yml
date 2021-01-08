@@ -47,7 +47,7 @@ Resources:
         }
         type Question {
           id: ID!
-          QuestionnaireId: ID!
+          questionnaireId: ID!
           question: String
         }
         type Questions {
@@ -59,7 +59,7 @@ Resources:
           getQuestionnaire(id: ID!): Questionnaire
         }
         type Mutation {
-          saveQuestion(id: ID!, QuestionnaireId: ID!, question: String!): Question
+          saveQuestion(questionnaireId: ID!, question: String!): Question
           saveQuestionnaire(id: ID!, title: String!, content: String!): Questionnaire
           deleteQuestionnaire(id: ID!): Questionnaire
         }
@@ -215,11 +215,11 @@ Resources:
           "version": "2017-02-28",
           "operation": "PutItem",
           "key": {
-            "id": $util.dynamodb.toDynamoDBJson($ctx.args.id),
+            "id": $util.dynamodb.toDynamoDBJson($util.autoId()),
             "UserId": $util.dynamodb.toDynamoDBJson($ctx.identity.sub)
           },
           "attributeValues": {
-            "QuestionnaireId": $util.dynamodb.toDynamoDBJson($ctx.args.QuestionnaireId),
+            "questionnaireId": $util.dynamodb.toDynamoDBJson($ctx.args.questionnaireId),
             "question": $util.dynamodb.toDynamoDBJson($ctx.args.question)
           }
         }

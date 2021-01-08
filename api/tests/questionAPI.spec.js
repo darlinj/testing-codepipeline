@@ -31,20 +31,19 @@ describe("The Question API", () => {
   });
 
   it("Adds a question and then checks it is there", async () => {
-    await saveQuestion("1234", "12345", "Some question");
+    const question = { questionnaireId: "12345", question: "Some question" };
+    await saveQuestion(question);
 
     await getQuestions().then(result => {
-      expect(result.data).toEqual({
-        getQuestions: {
-          questions: [
-            {
-              id: "1234",
-              QuestionnaireId: "12345",
-              question: "Some question"
-            }
-          ]
-        }
-      });
+      expect(result.data.getQuestions.questions[0].question).toEqual(
+        "Some question"
+      );
+      expect(result.data.getQuestions.questions[0].questionnaireId).toEqual(
+        "12345"
+      );
+      expect(result.data.getQuestions.questions[0].id.length).toBeGreaterThan(
+        10
+      );
     });
   });
 

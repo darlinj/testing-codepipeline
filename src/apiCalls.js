@@ -49,18 +49,18 @@ export const getQuestions = () => {
   getQuestions {
     questions {
       id
-      QuestionnaireId
+      questionnaireId
       question
     }
   }
 }`);
 };
 
-export const saveQuestion = (id, questionnaireId, question) => {
+export const saveQuestion = question => {
   return runGraphqlOperation(`mutation MyMutation {
-    saveQuestion(id: "${id}", QuestionnaireId: "${questionnaireId}", question: "${question}") {
+    saveQuestion(questionnaireId: "${question.questionnaireId}", question: "${question.question}") {
       id
-      QuestionnaireId
+      questionnaireId
       question
     }
   }`);
