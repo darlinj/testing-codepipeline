@@ -26,29 +26,24 @@ const login = async () => {
 describe("The Questionnaire API", () => {
   it("Returns an empty array if there are no records in the DB", async () => {
     await getQuestionnaires().then(result => {
-      expect(result.data).toEqual({
-        getQuestionnaires: {
-          questionnaires: []
-        }
-      });
+      expect(result.data.getQuestionnaires.questionnaires.length).toEqual(0);
     });
   });
 
   it("Adds a questionnaire and then checks it is there", async () => {
-    const questionnaire = { id: "1234", name: "Some name" };
-    await saveQuestionnaire(questionnaire);
+    let questionnaireId = 0;
+    const questionnaire = { name: "Some name" };
+    await saveQuestionnaire(questionnaire).then(result => {
+      questionnaireId = result.data.saveQuestionnaire.id;
+    });
 
     await getQuestionnaires().then(result => {
-      expect(result.data).toEqual({
-        getQuestionnaires: {
-          questionnaires: [
-            {
-              id: "1234",
-              name: "Some name"
-            }
-          ]
-        }
-      });
+      expect(result.data.getQuestionnaires.questionnaires[0].name).toEqual(
+        "Some name"
+      );
+      expect(
+        result.data.getQuestionnaires.questionnaires[0].id.length
+      ).toBeGreaterThan(10);
     });
   });
 
@@ -56,31 +51,28 @@ describe("The Questionnaire API", () => {
     const tableName = `${process.env.API_NAME}-questionnaires-table`;
     await addQuestionnaireForAnotherUser(tableName);
 
-    const questionnaire = { id: "1234", name: "Some name" };
-    await saveQuestionnaire(questionnaire);
+    let questionnaireId = 0;
+    const questionnaire = { name: "Some name" };
+    await saveQuestionnaire(questionnaire).then(result => {
+      questionnaireId = result.data.saveQuestionnaire.id;
+    });
 
     await getQuestionnaires().then(result => {
-      expect(result.data).toEqual({
-        getQuestionnaires: {
-          questionnaires: [
-            {
-              id: "1234",
-              name: "Some name"
-            }
-          ]
-        }
-      });
+      expect(result.data.getQuestionnaires.questionnaires.length).toEqual(1);
     });
   });
 
   it("Can get an individual Questionnaire by ID", async () => {
-    const questionnaire = { id: "1234", name: "Some name" };
-    await saveQuestionnaire(questionnaire);
+    let questionnaireId = 0;
+    const questionnaire = { name: "Some name" };
+    await saveQuestionnaire(questionnaire).then(result => {
+      questionnaireId = result.data.saveQuestionnaire.id;
+    });
 
-    await getQuestionnaire("1234").then(result => {
+    await getQuestionnaire(questionnaireId).then(result => {
       expect(result.data).toEqual({
         getQuestionnaire: {
-          id: "1234",
+          id: questionnaireId,
           name: "Some name"
         }
       });
@@ -88,21 +80,24 @@ describe("The Questionnaire API", () => {
   });
 
   it("Can delete an individual Questionnaire by ID", async () => {
-    const questionnaire = { id: "1234", name: "Some name" };
-    await saveQuestionnaire(questionnaire);
+    let questionnaireId = 0;
+    const questionnaire = { name: "Some name" };
+    await saveQuestionnaire(questionnaire).then(result => {
+      questionnaireId = result.data.saveQuestionnaire.id;
+    });
 
-    await getQuestionnaire("1234").then(result => {
+    await getQuestionnaire(questionnaireId).then(result => {
       expect(result.data).toEqual({
         getQuestionnaire: {
-          id: "1234",
+          id: questionnaireId,
           name: "Some name"
         }
       });
     });
 
-    await deleteQuestionnaire("1234");
+    await deleteQuestionnaire(questionnaireId);
 
-    await getQuestionnaire("1234").then(result => {
+    await getQuestionnaire(questionnaireId).then(result => {
       expect(result.data).toEqual({
         getQuestionnaire: null
       });
