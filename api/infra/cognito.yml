@@ -46,6 +46,10 @@ Resources:
       AutoVerifiedAttributes:
         - phone_number
       MfaConfiguration: "OFF"
+      UsernameAttributes: 
+        - email
+      UsernameConfiguration: 
+        CaseSensitive: false
       SmsConfiguration:
         ExternalId: !Sub ${NamePrefix}-external
         SnsCallerArn: !GetAtt SNSRole.Arn

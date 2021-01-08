@@ -6,7 +6,7 @@ run
 ./createDevAPI.sh
 Copy the relevant outputs from the cloudformation stack into the top of setEnv file
 run
-./api/infra/createCognitoUser.sh
+./api/tests/createCognitoUser.sh
 run
 npm test
 If everything passes then you are good
