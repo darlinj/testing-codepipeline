@@ -33,9 +33,9 @@ export const deleteQuestionnaire = id => {
 }`);
 };
 
-export const saveQuestionnaire = (id, name) => {
+export const saveQuestionnaire = questionnaire => {
   return runGraphqlOperation(`mutation MyMutation {
-    saveQuestionnaire(name: "${name}", id: "${id}") {
+    saveQuestionnaire(name: "${questionnaire.name}", id: "${questionnaire.id}") {
       id
       name
     }

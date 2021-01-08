@@ -35,7 +35,8 @@ describe("The Questionnaire API", () => {
   });
 
   it("Adds a questionnaire and then checks it is there", async () => {
-    await saveQuestionnaire("1234", "Some name");
+    const questionnaire = { id: "1234", name: "Some name" };
+    await saveQuestionnaire(questionnaire);
 
     await getQuestionnaires().then(result => {
       expect(result.data).toEqual({
@@ -55,7 +56,8 @@ describe("The Questionnaire API", () => {
     const tableName = `${process.env.API_NAME}-questionnaires-table`;
     await addQuestionnaireForAnotherUser(tableName);
 
-    await saveQuestionnaire("1234", "Some name");
+    const questionnaire = { id: "1234", name: "Some name" };
+    await saveQuestionnaire(questionnaire);
 
     await getQuestionnaires().then(result => {
       expect(result.data).toEqual({
@@ -72,7 +74,8 @@ describe("The Questionnaire API", () => {
   });
 
   it("Can get an individual Questionnaire by ID", async () => {
-    await saveQuestionnaire("1234", "Some name");
+    const questionnaire = { id: "1234", name: "Some name" };
+    await saveQuestionnaire(questionnaire);
 
     await getQuestionnaire("1234").then(result => {
       expect(result.data).toEqual({
@@ -85,7 +88,8 @@ describe("The Questionnaire API", () => {
   });
 
   it("Can delete an individual Questionnaire by ID", async () => {
-    await saveQuestionnaire("1234", "Some name");
+    const questionnaire = { id: "1234", name: "Some name" };
+    await saveQuestionnaire(questionnaire);
 
     await getQuestionnaire("1234").then(result => {
       expect(result.data).toEqual({
