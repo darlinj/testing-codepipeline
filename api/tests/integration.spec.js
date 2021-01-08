@@ -3,7 +3,7 @@ import { clearDatabase } from "./DBAdmin";
 import {
   saveQuestion,
   saveQuestionnaire,
-  getQuestionnaire
+  getQuestionnaireWithQuestions
 } from "../../src/apiCalls.js";
 import awsConfig from "../../aws_config";
 
@@ -36,7 +36,7 @@ describe("The integrated API", () => {
     };
     await saveQuestion(question);
 
-    await getQuestionnaire(questionnaireId).then(result => {
+    await getQuestionnaireWithQuestions(questionnaireId).then(result => {
       const questionnaire = result.data.getQuestionnaire;
       expect(questionnaire.name).toEqual("Some name");
       expect(questionnaire.questions.items.length).toEqual(1);

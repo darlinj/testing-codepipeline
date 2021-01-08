@@ -11,13 +11,21 @@ export const getQuestionnaires = () => {
     questionnaires {
       id
       name
-      questions
     }
   }
 }`);
 };
 
 export const getQuestionnaire = id => {
+  return runGraphqlOperation(`query MyQuery {
+  getQuestionnaire(id: "${id}") {
+    id
+    name
+  }
+}`);
+};
+
+export const getQuestionnaireWithQuestions = id => {
   return runGraphqlOperation(`query MyQuery {
   getQuestionnaire(id: "${id}") {
     id
