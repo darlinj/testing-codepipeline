@@ -40,6 +40,10 @@ Resources:
         type Questionnaire {
           id: ID!
           name: String
+          questions: QuestionConnection
+        }
+        type QuestionConnection {
+          items: [Question]
         }
         type Questionnaires {
           questionnaires: [Questionnaire!]!
@@ -200,6 +204,33 @@ Resources:
       ResponseMappingTemplate: |
         {
           "questions": $util.toJson($ctx.result.items)
+        }
+
+  AppSyncQuestionConnectionQueryResolver:
+    Type: "AWS::AppSync::Resolver"
+    DependsOn: AppSyncSchema
+    Properties:
+      ApiId: !GetAtt AppSyncApi.ApiId
+      TypeName: Questionnaire
+      FieldName: questions
+      DataSourceName: !GetAtt AppSyncQuestionsTableDataSource.Name
+      RequestMappingTemplate: |
+        {
+          "version": "2017-02-28",
+          "operation": "Query",
+          "index": "QuestionnaireIdGSI",
+          "query": {
+              "expression": "questionnaireId = :questionnaireId",
+              "expressionValues": {
+                  ":questionnaireId": {
+                      "S": "$context.source.id"
+                  }
+              }
+           }
+        }
+      ResponseMappingTemplate: |
+        {
+          "items": $util.toJson($context.result.items)
         }
 
   AppSyncSaveQuestionMutationResolver:

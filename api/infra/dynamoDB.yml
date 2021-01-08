@@ -88,6 +88,8 @@ Resources:
           AttributeType: "S"
         - AttributeName: "UserId"
           AttributeType: "S"
+        - AttributeName: "questionnaireId"
+          AttributeType: "S"
       KeySchema:
         - AttributeName: "id"
           KeyType: "HASH"
@@ -100,6 +102,15 @@ Resources:
         - IndexName: "UserId-index"
           KeySchema: 
             - AttributeName: "UserId"
+              KeyType: "HASH"
+          Projection:
+            ProjectionType: "ALL"
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+        - IndexName: "QuestionnaireIdGSI"
+          KeySchema: 
+            - AttributeName: "questionnaireId"
               KeyType: "HASH"
           Projection:
             ProjectionType: "ALL"

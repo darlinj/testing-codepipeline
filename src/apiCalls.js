@@ -11,6 +11,7 @@ export const getQuestionnaires = () => {
     questionnaires {
       id
       name
+      questions
     }
   }
 }`);
@@ -21,6 +22,11 @@ export const getQuestionnaire = id => {
   getQuestionnaire(id: "${id}") {
     id
     name
+    questions {
+      items {
+        question
+      }
+    }
   }
 }`);
 };
