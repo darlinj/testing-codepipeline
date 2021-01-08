@@ -35,7 +35,7 @@ describe("The Questionnaire API", () => {
   });
 
   it("Adds a questionnaire and then checks it is there", async () => {
-    await saveQuestionnaire("1234", "Some content", "Some title");
+    await saveQuestionnaire("1234", "Some name");
 
     await getQuestionnaires().then(result => {
       expect(result.data).toEqual({
@@ -43,8 +43,7 @@ describe("The Questionnaire API", () => {
           questionnaires: [
             {
               id: "1234",
-              content: "Some content",
-              title: "Some title"
+              name: "Some name"
             }
           ]
         }
@@ -56,7 +55,7 @@ describe("The Questionnaire API", () => {
     const tableName = `${process.env.API_NAME}-questionnaires-table`;
     await addQuestionnaireForAnotherUser(tableName);
 
-    await saveQuestionnaire("1234", "Some content", "Some title");
+    await saveQuestionnaire("1234", "Some name");
 
     await getQuestionnaires().then(result => {
       expect(result.data).toEqual({
@@ -64,8 +63,7 @@ describe("The Questionnaire API", () => {
           questionnaires: [
             {
               id: "1234",
-              content: "Some content",
-              title: "Some title"
+              name: "Some name"
             }
           ]
         }
@@ -74,28 +72,26 @@ describe("The Questionnaire API", () => {
   });
 
   it("Can get an individual Questionnaire by ID", async () => {
-    await saveQuestionnaire("1234", "Some content", "Some title");
+    await saveQuestionnaire("1234", "Some name");
 
     await getQuestionnaire("1234").then(result => {
       expect(result.data).toEqual({
         getQuestionnaire: {
           id: "1234",
-          content: "Some content",
-          title: "Some title"
+          name: "Some name"
         }
       });
     });
   });
 
   it("Can delete an individual Questionnaire by ID", async () => {
-    await saveQuestionnaire("1234", "Some content", "Some title");
+    await saveQuestionnaire("1234", "Some name");
 
     await getQuestionnaire("1234").then(result => {
       expect(result.data).toEqual({
         getQuestionnaire: {
           id: "1234",
-          content: "Some content",
-          title: "Some title"
+          name: "Some name"
         }
       });
     });

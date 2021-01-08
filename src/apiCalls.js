@@ -9,9 +9,8 @@ export const getQuestionnaires = () => {
   return runGraphqlOperation(`query MyQuery {
   getQuestionnaires {
     questionnaires {
-      title
-      content
       id
+      name
     }
   }
 }`);
@@ -20,9 +19,8 @@ export const getQuestionnaires = () => {
 export const getQuestionnaire = id => {
   return runGraphqlOperation(`query MyQuery {
   getQuestionnaire(id: "${id}") {
-    title
-    content
     id
+    name
   }
 }`);
 };
@@ -30,16 +28,16 @@ export const getQuestionnaire = id => {
 export const deleteQuestionnaire = id => {
   return runGraphqlOperation(`mutation MyMutation {
   deleteQuestionnaire(id: "${id}") {
-    content
+    id
   }
 }`);
 };
 
-export const saveQuestionnaire = (id, content, title) => {
+export const saveQuestionnaire = (id, name) => {
   return runGraphqlOperation(`mutation MyMutation {
-    saveQuestionnaire(content: "${content}", id: "${id}", title: "${title}") {
-      title
-      content
+    saveQuestionnaire(name: "${name}", id: "${id}") {
+      id
+      name
     }
   }`);
 };

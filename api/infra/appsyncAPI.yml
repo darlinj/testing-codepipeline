@@ -39,8 +39,7 @@ Resources:
       Definition: |
         type Questionnaire {
           id: ID!
-          title: String
-          content: String
+          name: String
         }
         type Questionnaires {
           questionnaires: [Questionnaire!]!
@@ -61,7 +60,7 @@ Resources:
         }
         type Mutation {
           saveQuestion(questionnaireId: ID!, question: String!): Question
-          saveQuestionnaire(id: ID!, title: String!, content: String!): Questionnaire
+          saveQuestionnaire(id: ID!, name: String!): Questionnaire
           deleteQuestion(id: ID!): Question
           deleteQuestionnaire(id: ID!): Questionnaire
         }
@@ -154,8 +153,7 @@ Resources:
             "UserId": $util.dynamodb.toDynamoDBJson($ctx.identity.sub)
           },
           "attributeValues": {
-            "title": $util.dynamodb.toDynamoDBJson($ctx.args.title),
-            "content": $util.dynamodb.toDynamoDBJson($ctx.args.content)
+            "name": $util.dynamodb.toDynamoDBJson($ctx.args.name)
           }
         }
       ResponseMappingTemplate: "$util.toJson($ctx.result)"
