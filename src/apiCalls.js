@@ -65,3 +65,21 @@ export const saveQuestion = question => {
     }
   }`);
 };
+
+export const getQuestion = id => {
+  return runGraphqlOperation(`query MyQuery {
+  getQuestion(id: "${id}") {
+    id
+    questionnaireId
+    question
+  }
+}`);
+};
+
+export const deleteQuestion = id => {
+  return runGraphqlOperation(`mutation MyMutation {
+  deleteQuestion(id: "${id}") {
+    id
+  }
+}`);
+};

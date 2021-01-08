@@ -2,8 +2,8 @@ import Amplify, { Auth } from "aws-amplify";
 import { clearDatabase, addQuestionForAnotherUser } from "./DBAdmin";
 import {
   saveQuestion,
-  //  getQuestion,
-  //  deleteQuestion,
+  getQuestion,
+  deleteQuestion,
   getQuestions
 } from "../../src/apiCalls.js";
 import awsConfig from "../../aws_config";
@@ -47,62 +47,59 @@ describe("The Question API", () => {
     });
   });
 
-  //  it("Can't see items that don't belong to this user", async () => {
-  //    await addQuestionForAnotherUser();
-  //
-  //    await saveQuestion("1234", "Some content", "Some title");
-  //
-  //    await getQuestions().then(result => {
-  //      expect(result.data).toEqual({
-  //        getQuestions: {
-  //          questions: [
-  //            {
-  //              QuestionId: "1234",
-  //              content: "Some content",
-  //              title: "Some title"
-  //            }
-  //          ]
-  //        }
-  //      });
-  //    });
-  //  });
-  //
-  //  it("Can get an individual Question by ID", async () => {
-  //    await saveQuestion("1234", "Some content", "Some title");
-  //
-  //    await getQuestion("1234").then(result => {
-  //      expect(result.data).toEqual({
-  //        getQuestion: {
-  //          QuestionId: "1234",
-  //          content: "Some content",
-  //          title: "Some title"
-  //        }
-  //      });
-  //    });
-  //  });
-  //
-  //  it("Can delete an individual Question by ID", async () => {
-  //    await saveQuestion("1234", "Some content", "Some title");
-  //
-  //    await getQuestion("1234").then(result => {
-  //      expect(result.data).toEqual({
-  //        getQuestion: {
-  //          QuestionId: "1234",
-  //          content: "Some content",
-  //          title: "Some title"
-  //        }
-  //      });
-  //    });
-  //
-  //    await deleteQuestion("1234");
-  //
-  //    await getQuestion("1234").then(result => {
-  //      expect(result.data).toEqual({
-  //        getQuestion: null
-  //      });
-  //    });
-  //  });
-  //
+  it("Can't see items that don't belong to this user", async () => {
+    const tableName = `${process.env.API_NAME}-questions-table`;
+    await addQuestionForAnotherUser(tableName);
+
+    const question = { questionnaireId: "12345", question: "Some question" };
+    await saveQuestion(question);
+
+    await getQuestions().then(result => {
+      expect(result.data.getQuestions.questions.length).toEqual(1);
+      expect(result.data.getQuestions.questions[0].question).toEqual(
+        "Some question"
+      );
+    });
+  });
+
+  it("Can get an individual Question by ID", async () => {
+    let questionId = 0;
+    const question = { questionnaireId: "12345", question: "Some question" };
+    await saveQuestion(question).then(result => {
+      questionId = result.data.saveQuestion.id;
+    });
+
+    await getQuestion(questionId).then(result => {
+      expect(result.data).toEqual({
+        getQuestion: {
+          id: questionId,
+          question: "Some question",
+          questionnaireId: "12345"
+        }
+      });
+    });
+  });
+
+  it("Can delete an individual Question by ID", async () => {
+    let questionId = 0;
+    const question = { questionnaireId: "12345", question: "Some question" };
+    await saveQuestion(question).then(result => {
+      questionId = result.data.saveQuestion.id;
+    });
+
+    await getQuestion(questionId).then(result => {
+      expect(result.data.getQuestion.question).toEqual("Some question");
+    });
+
+    await deleteQuestion(questionId);
+
+    await getQuestion(questionId).then(result => {
+      expect(result.data).toEqual({
+        getQuestion: null
+      });
+    });
+  });
+
   //  it("deleting a Question that doesn't exist", async () => {
   //    await deleteQuestion("9999").then(result => {
   //      expect(result.data).toEqual({ deleteQuestion: null });
