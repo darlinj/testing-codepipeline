@@ -4,7 +4,7 @@ phases:
   pre_build:
     commands:
       - npm install
-      - ./api/infra/createCognitoUser.sh testuser
+      - ./api/tests/createCognitoUser.sh testuser
   build:
     commands:
       - npm build
